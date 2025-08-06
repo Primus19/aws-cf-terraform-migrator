@@ -19,13 +19,13 @@ try:
         main()
         
 except ImportError as e:
-    print(f"❌ Import Error: {e}")
-    print("\n🔧 Troubleshooting:")
+    print(f"Import Error: {e}")
+    print("\nTroubleshooting:")
     print("1. Make sure you're in the aws-cf-terraform-migrator directory")
     print("2. Install dependencies: pip install -r requirements.txt")
     print("3. Try running: python run_cfmigrate.py --help")
     sys.exit(1)
 except Exception as e:
-    print(f"❌ Error: {e}")
+    print(f"Error: {e}")
     sys.exit(1)
 

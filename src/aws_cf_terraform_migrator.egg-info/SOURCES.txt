@@ -1,4 +1,3 @@
-README.md
 setup.py
 src/aws_cf_terraform_migrator/__init__.py
 src/aws_cf_terraform_migrator/cli.py
@@ -7,9 +6,11 @@ src/aws_cf_terraform_migrator/conversion.py
 src/aws_cf_terraform_migrator/discovery.py
 src/aws_cf_terraform_migrator/enhanced_cli.py
 src/aws_cf_terraform_migrator/enhanced_modules.py
+src/aws_cf_terraform_migrator/fixed_modules.py
 src/aws_cf_terraform_migrator/imports.py
 src/aws_cf_terraform_migrator/modules.py
 src/aws_cf_terraform_migrator/orchestrator.py
+src/aws_cf_terraform_migrator/production_modules.py
 src/aws_cf_terraform_migrator.egg-info/PKG-INFO
 src/aws_cf_terraform_migrator.egg-info/SOURCES.txt
 src/aws_cf_terraform_migrator.egg-info/dependency_links.txt

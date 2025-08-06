@@ -222,8 +222,16 @@ class ImportManager:
             try:
                 import_cmd = self._generate_import_command(resource_info)
                 if import_cmd:
+                    # Handle both StackInfo/ResourceInfo objects and dictionaries
+                    if hasattr(resource_info, 'resource_type'):
+                        resource_type = resource_info.resource_type
+                    elif isinstance(resource_info, dict):
+                        resource_type = resource_info.get('resource_type', 'Unknown')
+                    else:
+                        resource_type = 'Unknown'
+                        
                     import_commands.extend([
-                        f"# Import {resource_info.get('resource_type', 'Unknown')} - {resource_id}",
+                        f"# Import {resource_type} - {resource_id}",
                         f"echo 'Importing {resource_id}...'",
                         import_cmd,
                         "echo 'Import completed successfully'",
@@ -401,9 +409,17 @@ class ImportManager:
     def _generate_import_command(self, resource_info: Dict[str, Any]) -> Optional[str]:
         """Generate import command for a specific resource"""
         
-        resource_type = resource_info.get('resource_type', '')
-        resource_id = resource_info.get('resource_id', '')
-        logical_id = resource_info.get('logical_id', '')
+        # Handle both StackInfo/ResourceInfo objects and dictionaries
+        if hasattr(resource_info, 'resource_type'):
+            resource_type = resource_info.resource_type
+            resource_id = getattr(resource_info, 'resource_id', '')
+            logical_id = getattr(resource_info, 'logical_id', '')
+        elif isinstance(resource_info, dict):
+            resource_type = resource_info.get('resource_type', '')
+            resource_id = resource_info.get('resource_id', '')
+            logical_id = resource_info.get('logical_id', '')
+        else:
+            return None
         
         if not resource_type or not resource_id:
             return None
@@ -433,11 +449,19 @@ class ImportManager:
         
         # Generate standard import command
         try:
+            # Handle both object and dictionary access
+            if hasattr(resource_info, 'arn'):
+                arn = getattr(resource_info, 'arn', resource_id)
+                name = getattr(resource_info, 'name', resource_id)
+            else:
+                arn = resource_info.get('arn', resource_id) if isinstance(resource_info, dict) else resource_id
+                name = resource_info.get('name', resource_id) if isinstance(resource_info, dict) else resource_id
+                
             import_cmd = import_template.format(
                 address=resource_address,
                 id=resource_id,
-                arn=resource_info.get('arn', resource_id),
-                name=resource_info.get('name', resource_id)
+                arn=arn,
+                name=name
             )
             return import_cmd
         except KeyError as e:
@@ -448,8 +472,13 @@ class ImportManager:
                                         resource_info: Dict[str, Any]) -> Optional[str]:
         """Generate import commands for resources requiring compound identifiers"""
         
-        resource_id = resource_info.get('resource_id', '')
-        properties = resource_info.get('properties', {})
+        # Handle both object and dictionary access
+        if hasattr(resource_info, 'resource_id'):
+            resource_id = resource_info.resource_id
+            properties = getattr(resource_info, 'properties', {})
+        else:
+            resource_id = resource_info.get('resource_id', '') if isinstance(resource_info, dict) else ''
+            properties = resource_info.get('properties', {}) if isinstance(resource_info, dict) else {}
         
         if terraform_type == 'aws_internet_gateway_attachment':
             vpc_id = properties.get('VpcId', '')

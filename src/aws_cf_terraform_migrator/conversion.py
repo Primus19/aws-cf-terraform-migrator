@@ -511,7 +511,7 @@ class IntrinsicFunctionHandler:
         processed_true = self.process_value(true_value, context)
         processed_false = self.process_value(false_value, context)
         
-        return f"var.{condition_name.lower()} ? {processed_true} : {processed_false}"
+        return f"var.{condition_name.lower()} - {processed_true} : {processed_false}"
 
 
 class ConversionEngine:

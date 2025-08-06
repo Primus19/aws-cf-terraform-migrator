@@ -1,6 +1,6 @@
 # Installation and Usage Guide
 
-## 📦 Installation
+##  Installation
 
 ### Prerequisites
 
@@ -88,7 +88,7 @@ export AWS_DEFAULT_REGION=us-east-1
 aws sts get-caller-identity
 ```
 
-## 🚀 Quick Start Usage
+##  Quick Start Usage
 
 ### Option 1: One-Command Migration (Recommended)
 
@@ -126,7 +126,7 @@ python run_cfmigrate.py generate-imports \
   --discovery-file discovery.json
 ```
 
-## 📋 Complete Usage Example
+##  Complete Usage Example
 
 Let's walk through a complete migration example:
 
@@ -245,7 +245,7 @@ terraform fmt -check
 cfmigrate validate --terraform-dir .
 ```
 
-## 🔧 Advanced Usage
+##  Advanced Usage
 
 ### Using Configuration Files
 
@@ -312,7 +312,7 @@ cfmigrate convert-all \
   --module-prefix global
 ```
 
-## 🛠️ CLI Command Reference
+##  CLI Command Reference
 
 ### Main Commands
 
@@ -368,7 +368,7 @@ cfmigrate convert-all --regions us-east-1 --output ./terraform --dry-run
 cfmigrate convert-all --regions us-east-1 --output ./terraform --profile production
 ```
 
-## 🔍 Troubleshooting
+##  Troubleshooting
 
 ### Common Issues
 
@@ -470,7 +470,7 @@ After successful migration:
    - Regular plan checks for drift detection
    - Update and maintain modules
 
-## 🎯 Best Practices
+##  Best Practices
 
 ### Security
 - Never commit `terraform.tfvars` to version control

@@ -836,12 +836,8 @@ class EnhancedModuleGenerator:
         """Generate locals block for the module"""
         
         return {
-            'common_tags': {
-                'Module': module_name,
-                'ManagedBy': 'terraform',
-                'Environment': 'var.environment'
-            },
-            'name_prefix': 'var.name_prefix != "" ? var.name_prefix : var.environment'
+            'common_tags': "merge(var.tags, { Module = \"${module_name}\", ManagedBy = \"terraform\", Environment = var.environment })",
+            'name_prefix': "var.name_prefix != \"\" ? var.name_prefix : var.environment"
         }
     
     def _write_main_tf(self, module_path: Path, module_name: str, terraform_resources: Dict[str, Any], locals_dict: Dict[str, Any]):
@@ -973,11 +969,11 @@ All configuration is parameterized through variables.
 
 ## Features
 
-- ✅ No hardcoded values - everything is configurable
-- ✅ Preserves original AWS resource names
-- ✅ Comprehensive variable validation
-- ✅ Complete output coverage
-- ✅ Ready for import of existing resources
+- [x] No hardcoded values - everything is configurable
+- [x] Preserves original AWS resource names
+- [x] Comprehensive variable validation
+- [x] Complete output coverage
+- [x] Ready for import of existing resources
 
 ## Usage
 

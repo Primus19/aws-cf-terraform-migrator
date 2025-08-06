@@ -98,7 +98,7 @@ def discover(ctx, regions, profile, role_arn, include_deleted, stack_filter,
             cli_args=cli_args
         )
         
-        click.echo("🔍 Starting AWS resource discovery...")
+        click.echo("Discovering Starting AWS resource discovery...")
         
         # Initialize discovery engine
         discovery = DiscoveryEngine(
@@ -118,22 +118,22 @@ def discover(ctx, regions, profile, role_arn, include_deleted, stack_filter,
         summary = discovery.get_stack_summary()
         
         # Display results
-        click.echo(f"\n✅ Discovery completed successfully!")
-        click.echo(f"   📊 Total stacks: {summary['total_stacks']}")
-        click.echo(f"   📦 Total resources: {summary['total_resources']}")
-        click.echo(f"   ☁️  CloudFormation managed: {summary['cloudformation_managed']}")
-        click.echo(f"   🔧 Independent resources: {summary['independent_resources']}")
-        click.echo(f"   🌍 Regions scanned: {', '.join(summary['regions_scanned'])}")
+        click.echo(f"\nSuccess Discovery completed successfully!")
+        click.echo(f"    Total stacks: {summary['total_stacks']}")
+        click.echo(f"    Total resources: {summary['total_resources']}")
+        click.echo(f"   --  CloudFormation managed: {summary['cloudformation_managed']}")
+        click.echo(f"    Independent resources: {summary['independent_resources']}")
+        click.echo(f"   - Regions scanned: {', '.join(summary['regions_scanned'])}")
         
         # Output results
         if output_format == 'table':
             _display_discovery_table(summary, stacks, resources)
         else:
             discovery.export_discovery_results(output_file)
-            click.echo(f"\n📄 Results exported to: {output_file}")
+            click.echo(f"\nFiles: Results exported to: {output_file}")
         
     except Exception as e:
-        click.echo(f"❌ Discovery failed: {str(e)}", err=True)
+        click.echo(f"Error Discovery failed: {str(e)}", err=True)
         sys.exit(1)
 
 
@@ -185,9 +185,9 @@ def convert(ctx, regions, profile, role_arn, stack_filter, output_dir,
         )
         
         if dry_run:
-            click.echo("🧪 Performing dry run...")
+            click.echo("- Performing dry run...")
         
-        click.echo("🚀 Starting CloudFormation to Terraform conversion...")
+        click.echo("Starting Starting CloudFormation to Terraform conversion...")
         
         # Initialize orchestrator
         orchestrator = Orchestrator(config)
@@ -196,22 +196,22 @@ def convert(ctx, regions, profile, role_arn, stack_filter, output_dir,
         result = orchestrator.run_conversion(dry_run=dry_run)
         
         if result['success']:
-            click.echo(f"\n✅ Conversion completed successfully!")
-            click.echo(f"   📁 Output directory: {result['output_directory']}")
-            click.echo(f"   📦 Modules generated: {result['modules_count']}")
-            click.echo(f"   📄 Files created: {result['files_count']}")
+            click.echo(f"\nSuccess Conversion completed successfully!")
+            click.echo(f"   Directory Output directory: {result['output_directory']}")
+            click.echo(f"    Modules generated: {result['modules_count']}")
+            click.echo(f"   Files: Files created: {result['files_count']}")
             
             if not dry_run:
-                click.echo(f"\n📋 Next steps:")
+                click.echo(f"\n Next steps:")
                 click.echo(f"   1. Review generated Terraform modules in {result['output_directory']}")
                 click.echo(f"   2. Run import scripts to bring resources under Terraform management")
                 click.echo(f"   3. Test with 'terraform plan' to verify configurations")
         else:
-            click.echo(f"❌ Conversion failed: {result['error']}", err=True)
+            click.echo(f"Error Conversion failed: {result['error']}", err=True)
             sys.exit(1)
         
     except Exception as e:
-        click.echo(f"❌ Conversion failed: {str(e)}", err=True)
+        click.echo(f"Error Conversion failed: {str(e)}", err=True)
         sys.exit(1)
 
 
@@ -240,12 +240,12 @@ def import_resources(ctx, import_file, terraform_dir, parallel, max_workers, dry
         config = config_manager.load_config(config_file=ctx.obj.get('config_file'))
         
         if dry_run:
-            click.echo("🧪 Dry run - showing import commands...")
+            click.echo("- Dry run - showing import commands...")
             with open(import_file, 'r') as f:
                 click.echo(f.read())
             return
         
-        click.echo("📥 Starting Terraform import operations...")
+        click.echo("Importing Starting Terraform import operations...")
         
         # Import resources using ImportManager
         from .imports import ImportManager
@@ -262,19 +262,19 @@ def import_resources(ctx, import_file, terraform_dir, parallel, max_workers, dry
         result = import_manager.execute_import_script(import_file)
         
         if result['success']:
-            click.echo(f"\n✅ Import operations completed!")
-            click.echo(f"   ✅ Successful imports: {result['successful_imports']}")
-            click.echo(f"   ❌ Failed imports: {result['failed_imports']}")
-            click.echo(f"   ⏱️  Total time: {result['total_time']:.2f} seconds")
+            click.echo(f"\nSuccess Import operations completed!")
+            click.echo(f"   Success Successful imports: {result['successful_imports']}")
+            click.echo(f"   Error Failed imports: {result['failed_imports']}")
+            click.echo(f"   --  Total time: {result['total_time']:.2f} seconds")
             
             if result['failed_imports'] > 0:
-                click.echo(f"\n⚠️  Some imports failed. Check the logs for details.")
+                click.echo(f"\nWarning  Some imports failed. Check the logs for details.")
         else:
-            click.echo(f"❌ Import operations failed: {result['error']}", err=True)
+            click.echo(f"Error Import operations failed: {result['error']}", err=True)
             sys.exit(1)
         
     except Exception as e:
-        click.echo(f"❌ Import operations failed: {str(e)}", err=True)
+        click.echo(f"Error Import operations failed: {str(e)}", err=True)
         sys.exit(1)
 
 
@@ -292,7 +292,7 @@ def init_config(output_file, config_format):
     """
     try:
         if os.path.exists(output_file):
-            if not click.confirm(f"Configuration file {output_file} already exists. Overwrite?"):
+            if not click.confirm(f"Configuration file {output_file} already exists. Overwrite-"):
                 click.echo("Configuration file creation cancelled.")
                 return
         
@@ -305,11 +305,11 @@ def init_config(output_file, config_format):
                 config_dict = yaml.safe_load(DEFAULT_CONFIG_TEMPLATE)
                 json.dump(config_dict, f, indent=2)
         
-        click.echo(f"✅ Default configuration file created: {output_file}")
-        click.echo(f"📝 Edit this file to customize settings for your environment.")
+        click.echo(f"Success Default configuration file created: {output_file}")
+        click.echo(f" Edit this file to customize settings for your environment.")
         
     except Exception as e:
-        click.echo(f"❌ Failed to create configuration file: {str(e)}", err=True)
+        click.echo(f"Error Failed to create configuration file: {str(e)}", err=True)
         sys.exit(1)
 
 
@@ -325,16 +325,16 @@ def validate_config(ctx):
         config_manager = ConfigManager()
         config = config_manager.load_config(config_file=ctx.obj.get('config_file'))
         
-        click.echo("✅ Configuration validation passed!")
+        click.echo("Success Configuration validation passed!")
         
         # Display configuration summary
         summary = config_manager.get_config_summary()
-        click.echo("\n📋 Configuration Summary:")
+        click.echo("\n Configuration Summary:")
         for key, value in summary.items():
             click.echo(f"   {key}: {value}")
         
     except Exception as e:
-        click.echo(f"❌ Configuration validation failed: {str(e)}", err=True)
+        click.echo(f"Error Configuration validation failed: {str(e)}", err=True)
         sys.exit(1)
 
 
@@ -351,7 +351,7 @@ def validate_terraform(terraform_dir, output_file):
     and basic semantic correctness.
     """
     try:
-        click.echo("🔍 Validating Terraform configurations...")
+        click.echo("Discovering Validating Terraform configurations...")
         
         # Import validation logic
         from .validation import TerraformValidator
@@ -360,22 +360,22 @@ def validate_terraform(terraform_dir, output_file):
         result = validator.validate_all()
         
         if result['valid']:
-            click.echo("✅ Terraform validation passed!")
-            click.echo(f"   📁 Modules validated: {result['modules_count']}")
-            click.echo(f"   📄 Files validated: {result['files_count']}")
+            click.echo("Success Terraform validation passed!")
+            click.echo(f"   Directory Modules validated: {result['modules_count']}")
+            click.echo(f"   Files: Files validated: {result['files_count']}")
         else:
-            click.echo("❌ Terraform validation failed!")
-            click.echo(f"   ❌ Errors found: {result['error_count']}")
-            click.echo(f"   ⚠️  Warnings found: {result['warning_count']}")
+            click.echo("Error Terraform validation failed!")
+            click.echo(f"   Error Errors found: {result['error_count']}")
+            click.echo(f"   Warning  Warnings found: {result['warning_count']}")
         
         # Export detailed report
         with open(output_file, 'w') as f:
             json.dump(result, f, indent=2)
         
-        click.echo(f"\n📄 Detailed validation report: {output_file}")
+        click.echo(f"\nFiles: Detailed validation report: {output_file}")
         
     except Exception as e:
-        click.echo(f"❌ Terraform validation failed: {str(e)}", err=True)
+        click.echo(f"Error Terraform validation failed: {str(e)}", err=True)
         sys.exit(1)
 
 
@@ -383,7 +383,7 @@ def _display_discovery_table(summary, stacks, resources):
     """Display discovery results in table format"""
     
     # Stack summary table
-    click.echo("\n📊 Stack Summary:")
+    click.echo("\n Stack Summary:")
     stack_data = []
     for status, count in summary['stack_statuses'].items():
         stack_data.append([status, count])
@@ -392,7 +392,7 @@ def _display_discovery_table(summary, stacks, resources):
         click.echo(tabulate(stack_data, headers=['Status', 'Count'], tablefmt='grid'))
     
     # Resource type summary table
-    click.echo("\n📦 Resource Type Summary:")
+    click.echo("\n Resource Type Summary:")
     resource_data = []
     for resource_type, count in sorted(summary['resource_types'].items()):
         resource_data.append([resource_type, count])
@@ -405,7 +405,7 @@ def _display_discovery_table(summary, stacks, resources):
     
     # Individual stacks table
     if len(stacks) <= 10:  # Only show details for small number of stacks
-        click.echo("\n🏗️  Stack Details:")
+        click.echo("\n--  Stack Details:")
         stack_details = []
         for stack in stacks.values():
             stack_details.append([
@@ -426,10 +426,10 @@ def main():
     try:
         cli()
     except KeyboardInterrupt:
-        click.echo("\n⚠️  Operation cancelled by user.")
+        click.echo("\nWarning  Operation cancelled by user.")
         sys.exit(1)
     except Exception as e:
-        click.echo(f"❌ Unexpected error: {str(e)}", err=True)
+        click.echo(f"Error Unexpected error: {str(e)}", err=True)
         sys.exit(1)
 
 

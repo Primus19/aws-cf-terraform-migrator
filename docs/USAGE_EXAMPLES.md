@@ -90,21 +90,21 @@ Found 3 stacks with 30 resources
 Found 15 independent resources
 
 Converting CloudFormation templates...
-  ✓ web-app-stack: 12 resources converted
-  ✓ database-stack: 8 resources converted
-  ✓ networking-stack: 10 resources converted
+   web-app-stack: 12 resources converted
+   database-stack: 8 resources converted
+   networking-stack: 10 resources converted
 
 Organizing resources into modules...
-  ✓ networking: 15 resources
-  ✓ compute: 8 resources
-  ✓ storage: 7 resources
-  ✓ database: 8 resources
-  ✓ security: 7 resources
+   networking: 15 resources
+   compute: 8 resources
+   storage: 7 resources
+   database: 8 resources
+   security: 7 resources
 
 Generating Terraform files...
-  ✓ Created 5 modules
-  ✓ Generated 25 .tf files
-  ✓ Created import script with 45 commands
+   Created 5 modules
+   Generated 25 .tf files
+   Created import script with 45 commands
 
 Conversion completed in 12.3 seconds
 Output directory: ./terraform
@@ -620,13 +620,13 @@ cfmigrate convert-all --config config.yaml --output ./terraform
 
 # Check for errors
 if [ $? -eq 0 ]; then
-    echo "✅ CF2TF conversion completed successfully"
+    echo " CF2TF conversion completed successfully"
     # Send success notification
     curl -X POST -H 'Content-type: application/json' \
         --data '{"text":"CF2TF conversion completed successfully"}' \
         $SLACK_WEBHOOK_URL
 else
-    echo "❌ CF2TF conversion failed"
+    echo " CF2TF conversion failed"
     # Send failure notification
     curl -X POST -H 'Content-type: application/json' \
         --data '{"text":"CF2TF conversion failed - check logs"}' \
@@ -640,9 +640,9 @@ terraform init
 terraform validate
 
 if [ $? -eq 0 ]; then
-    echo "✅ Terraform validation passed"
+    echo " Terraform validation passed"
 else
-    echo "❌ Terraform validation failed"
+    echo " Terraform validation failed"
     exit 1
 fi
 EOF

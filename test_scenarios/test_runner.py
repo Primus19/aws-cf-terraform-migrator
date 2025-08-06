@@ -135,7 +135,7 @@ class TestRunner:
                 scenario.errors.extend(result.get('errors', []))
                 scenario.warnings.extend(result.get('warnings', []))
             
-            print(f"\nScenario {scenario.name}: {'✓ PASSED' if scenario.success else '✗ FAILED'}")
+            print(f"\nScenario {scenario.name}: {' PASSED' if scenario.success else '✗ FAILED'}")
             if scenario.errors:
                 print(f"Errors: {len(scenario.errors)}")
                 for error in scenario.errors[:3]:  # Show first 3 errors
@@ -183,8 +183,8 @@ class TestRunner:
             result['conversion_warnings'] = len(conversion_result.warnings)
             result['conversion_errors'] = len(conversion_result.errors)
             
-            print(f"   ✓ Converted {result['resources_converted']} resource types")
-            print(f"   ✓ Generated {result['import_commands']} import commands")
+            print(f"    Converted {result['resources_converted']} resource types")
+            print(f"    Generated {result['import_commands']} import commands")
             
         except Exception as e:
             result['errors'].append(f"Conversion engine failed: {str(e)}")
@@ -249,8 +249,8 @@ class TestRunner:
             result['module_errors'] = len(generation_result.errors)
             result['module_warnings'] = len(generation_result.warnings)
             
-            print(f"   ✓ Generated {result['modules_generated']} modules")
-            print(f"   ✓ Created {result['files_generated']} files")
+            print(f"    Generated {result['modules_generated']} modules")
+            print(f"    Created {result['files_generated']} files")
             
         except Exception as e:
             result['errors'].append(f"Module generation failed: {str(e)}")
@@ -353,9 +353,9 @@ class TestRunner:
                 result['modules_count'] = orchestration_result.get('modules_count', 0)
                 result['files_count'] = orchestration_result.get('files_count', 0)
                 
-                print(f"   ✓ Discovered {result['resources_discovered']} resources")
-                print(f"   ✓ Converted {result['resources_converted']} resources")
-                print(f"   ✓ Generated {result['modules_count']} modules")
+                print(f"    Discovered {result['resources_discovered']} resources")
+                print(f"    Converted {result['resources_converted']} resources")
+                print(f"    Generated {result['modules_count']} modules")
         
         except Exception as e:
             result['errors'].append(f"Orchestration failed: {str(e)}")
@@ -430,9 +430,9 @@ class TestRunner:
             result['success'] = True
             result['terraform_files'] = len(list(terraform_dir.rglob("*.tf")))
             
-            print(f"   ✓ Found {result['terraform_files']} Terraform files")
-            print(f"   ✓ Found {result.get('modules_found', 0)} modules")
-            print(f"   ✓ Found {result.get('import_commands_found', 0)} import commands")
+            print(f"    Found {result['terraform_files']} Terraform files")
+            print(f"    Found {result.get('modules_found', 0)} modules")
+            print(f"    Found {result.get('import_commands_found', 0)} import commands")
         
         except Exception as e:
             result['errors'].append(f"Terraform validation failed: {str(e)}")
@@ -482,7 +482,7 @@ class TestRunner:
         print("-" * 60)
         
         for scenario in self.scenarios:
-            status = "✓ PASS" if scenario.success else "✗ FAIL"
+            status = " PASS" if scenario.success else "✗ FAIL"
             print(f"{scenario.name:<20} {status:<10} {len(scenario.errors):<8} {len(scenario.warnings):<10}")
         
         # Detailed failure analysis

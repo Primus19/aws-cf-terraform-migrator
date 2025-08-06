@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Enhanced CLI for CF2TF Converter
+Enhanced CLI for AWS CloudFormation to Terraform Migrator
 
 Simple, user-friendly command-line interface that makes the tool easy to use
 with clear commands and helpful output.
@@ -48,11 +48,11 @@ class EnhancedCLI:
             try:
                 args.func(args)
             except KeyboardInterrupt:
-                print("\n❌ Operation cancelled by user")
+                print("\nError Operation cancelled by user")
                 sys.exit(1)
             except Exception as e:
                 self.logger.error(f"Operation failed: {str(e)}")
-                print(f"\n❌ Error: {str(e)}")
+                print(f"\nError Error: {str(e)}")
                 sys.exit(1)
         else:
             parser.print_help()
@@ -60,34 +60,31 @@ class EnhancedCLI:
     def _create_parser(self) -> argparse.ArgumentParser:
         """Create argument parser with all commands"""
         parser = argparse.ArgumentParser(
-            description="CF2TF Converter - Convert CloudFormation to Terraform with zero downtime",
+            description="AWS CloudFormation to Terraform Migrator - Convert CloudFormation to Terraform with zero downtime",
             formatter_class=argparse.RawDescriptionHelpFormatter,
             epilog="""
 Examples:
   # Quick conversion (discover + convert + generate imports)
-  cf2tf convert-all --regions us-east-1,us-west-2 --output ./terraform
+  %(prog)s convert-all --regions us-east-1 --output ./terraform
   
-  # Step-by-step process
-  cf2tf discover --regions us-east-1 --output discovery.json
-  cf2tf convert --input discovery.json --output ./terraform
-  cf2tf generate-imports --terraform-dir ./terraform
+  # Step by step
+  %(prog)s discover --regions us-east-1 --output discovery.json
+  %(prog)s convert --input discovery.json --output ./terraform
+  %(prog)s generate-imports --terraform-dir ./terraform --output import.sh
   
-  # With configuration file
-  cf2tf convert-all --config config.yaml
-  
-  # Validate existing Terraform
-  cf2tf validate --terraform-dir ./terraform
-            """
+  # Validate configuration
+  %(prog)s validate --terraform-dir ./terraform
+"""
         )
         
-        parser.add_argument('--version', action='version', version='CF2TF Converter 1.0.0')
+        parser.add_argument('--version', action='version', version='AWS CloudFormation to Terraform Migrator 1.0.0')
         
         subparsers = parser.add_subparsers(dest='command', help='Available commands')
         
         # Convert-all command (most common use case)
         convert_all_parser = subparsers.add_parser(
             'convert-all',
-            help='🚀 One-command conversion: discover, convert, and generate imports',
+            help='Starting One-command conversion: discover, convert, and generate imports',
             description='Discover AWS resources, convert to Terraform, and generate import scripts in one command'
         )
         self._add_convert_all_args(convert_all_parser)
@@ -96,7 +93,7 @@ Examples:
         # Discover command
         discover_parser = subparsers.add_parser(
             'discover',
-            help='🔍 Discover AWS resources and CloudFormation stacks',
+            help='Discovering Discover AWS resources and CloudFormation stacks',
             description='Discover all AWS resources including CloudFormation stacks and independent resources'
         )
         self._add_discover_args(discover_parser)
@@ -105,7 +102,7 @@ Examples:
         # Convert command
         convert_parser = subparsers.add_parser(
             'convert',
-            help='🔄 Convert discovered resources to Terraform modules',
+            help='Converting Convert discovered resources to Terraform modules',
             description='Convert discovered AWS resources to Terraform modules with proper organization'
         )
         self._add_convert_args(convert_parser)
@@ -114,7 +111,7 @@ Examples:
         # Generate imports command
         imports_parser = subparsers.add_parser(
             'generate-imports',
-            help='📥 Generate Terraform import scripts',
+            help='Importing Generate Terraform import scripts',
             description='Generate scripts to import existing AWS resources into Terraform state'
         )
         self._add_imports_args(imports_parser)
@@ -123,7 +120,7 @@ Examples:
         # Validate command
         validate_parser = subparsers.add_parser(
             'validate',
-            help='✅ Validate generated Terraform configuration',
+            help='Success Validate generated Terraform configuration',
             description='Validate Terraform configuration and check for issues'
         )
         self._add_validate_args(validate_parser)
@@ -132,7 +129,7 @@ Examples:
         # Status command
         status_parser = subparsers.add_parser(
             'status',
-            help='📊 Show status of Terraform configuration',
+            help=' Show status of Terraform configuration',
             description='Show current status of Terraform configuration and resources'
         )
         self._add_status_args(status_parser)
@@ -333,7 +330,7 @@ Examples:
     
     def convert_all(self, args):
         """Execute complete conversion process"""
-        print("🚀 Starting complete CloudFormation to Terraform conversion...")
+        print("Starting Starting complete CloudFormation to Terraform conversion...")
         print("   This process will:")
         print("   1. Discover AWS resources and CloudFormation stacks")
         print("   2. Convert to Terraform modules with no hardcoded values")
@@ -355,37 +352,37 @@ Examples:
         regions = [r.strip() for r in args.regions.split(',')]
         
         # Step 1: Discovery
-        print("🔍 Step 1: Discovering AWS resources...")
+        print("Discovering Step 1: Discovering AWS resources...")
         discovery_result = self._run_discovery(regions, args, config)
         
         if not discovery_result:
-            print("❌ No resources discovered. Please check your AWS credentials and permissions.")
+            print("Error No resources discovered. Please check your AWS credentials and permissions.")
             return
         
-        print(f"✅ Discovery complete: {len(discovery_result)} resources found")
+        print(f"Success Discovery complete: {len(discovery_result)} resources found")
         
         # Step 2: Conversion
-        print("\n🔄 Step 2: Converting to Terraform modules...")
+        print("\nConverting Step 2: Converting to Terraform modules...")
         conversion_result = self._run_conversion(discovery_result, args, config)
         
-        print(f"✅ Conversion complete: {len(conversion_result.modules)} modules generated")
+        print(f"Success Conversion complete: {len(conversion_result.modules)} modules generated")
         
         # Step 3: Generate imports
-        print("\n📥 Step 3: Generating import scripts...")
+        print("\nImporting Step 3: Generating import scripts...")
         import_result = self._run_import_generation(args.output, discovery_result, args)
         
-        print(f"✅ Import scripts generated: {import_result}")
+        print(f"Success Import scripts generated: {import_result}")
         
         # Summary
         elapsed_time = time.time() - start_time
-        print(f"\n🎉 Conversion completed successfully in {elapsed_time:.2f} seconds!")
-        print(f"   📁 Output directory: {args.output}")
-        print(f"   📊 Modules generated: {len(conversion_result.modules)}")
-        print(f"   📄 Total files: {conversion_result.total_files}")
-        print(f"   🔧 Variables: {conversion_result.total_variables}")
-        print(f"   📤 Outputs: {conversion_result.total_outputs}")
+        print(f"\nComplete Conversion completed successfully in {elapsed_time:.2f} seconds!")
+        print(f"   Directory Output directory: {args.output}")
+        print(f"    Modules generated: {len(conversion_result.modules)}")
+        print(f"   Total files: {conversion_result.total_files}")
+        print(f"    Variables: {conversion_result.total_variables}")
+        print(f"   Outputs: {conversion_result.total_outputs}")
         
-        print("\n📋 Next steps:")
+        print("\n Next steps:")
         print(f"   1. cd {args.output}")
         print("   2. terraform init")
         print("   3. Review terraform.tfvars.example and create terraform.tfvars")
@@ -397,7 +394,7 @@ Examples:
     
     def discover(self, args):
         """Execute discovery process"""
-        print("🔍 Discovering AWS resources and CloudFormation stacks...")
+        print("Discovering Discovering AWS resources and CloudFormation stacks...")
         
         if args.verbose:
             logging.getLogger().setLevel(logging.DEBUG)
@@ -411,13 +408,13 @@ Examples:
             with open(args.output, 'w') as f:
                 json.dump(discovery_result, f, indent=2, default=str)
             
-            print(f"✅ Discovery complete: {len(discovery_result)} resources saved to {args.output}")
+            print(f"Success Discovery complete: {len(discovery_result)} resources saved to {args.output}")
         else:
-            print("❌ No resources discovered")
+            print("Error No resources discovered")
     
     def convert(self, args):
         """Execute conversion process"""
-        print("🔄 Converting discovered resources to Terraform modules...")
+        print("Converting Converting discovered resources to Terraform modules...")
         
         if args.verbose:
             logging.getLogger().setLevel(logging.DEBUG)
@@ -428,11 +425,11 @@ Examples:
         
         conversion_result = self._run_conversion(discovery_result, args, {})
         
-        print(f"✅ Conversion complete: {len(conversion_result.modules)} modules generated in {args.output}")
+        print(f"Success Conversion complete: {len(conversion_result.modules)} modules generated in {args.output}")
     
     def generate_imports(self, args):
         """Generate import scripts"""
-        print("📥 Generating Terraform import scripts...")
+        print("Importing Generating Terraform import scripts...")
         
         if args.verbose:
             logging.getLogger().setLevel(logging.DEBUG)
@@ -444,11 +441,11 @@ Examples:
         
         import_result = self._run_import_generation(args.terraform_dir, discovery_result, args)
         
-        print(f"✅ Import scripts generated: {import_result}")
+        print(f"Success Import scripts generated: {import_result}")
     
     def validate(self, args):
         """Validate Terraform configuration"""
-        print("✅ Validating Terraform configuration...")
+        print("Success Validating Terraform configuration...")
         
         if args.verbose:
             logging.getLogger().setLevel(logging.DEBUG)
@@ -456,7 +453,7 @@ Examples:
         terraform_dir = Path(args.terraform_dir)
         
         if not terraform_dir.exists():
-            print(f"❌ Terraform directory not found: {terraform_dir}")
+            print(f"Error Terraform directory not found: {terraform_dir}")
             return
         
         # Check for required files
@@ -468,7 +465,7 @@ Examples:
                 missing_files.append(file_name)
         
         if missing_files:
-            print(f"❌ Missing required files: {', '.join(missing_files)}")
+            print(f"Error Missing required files: {', '.join(missing_files)}")
             return
         
         # Run terraform validate if available
@@ -482,34 +479,34 @@ Examples:
             )
             
             if result.returncode == 0:
-                print("✅ Terraform configuration is valid")
+                print("Success Terraform configuration is valid")
             else:
-                print(f"❌ Terraform validation failed:\n{result.stderr}")
+                print(f"Error Terraform validation failed:\n{result.stderr}")
         
         except FileNotFoundError:
-            print("⚠️  Terraform not found in PATH. Skipping terraform validate.")
-            print("✅ Basic file structure validation passed")
+            print("Warning  Terraform not found in PATH. Skipping terraform validate.")
+            print("Success Basic file structure validation passed")
     
     def status(self, args):
         """Show status of Terraform configuration"""
-        print("📊 Checking Terraform configuration status...")
+        print(" Checking Terraform configuration status...")
         
         terraform_dir = Path(args.terraform_dir)
         
         if not terraform_dir.exists():
-            print(f"❌ Terraform directory not found: {terraform_dir}")
+            print(f"Error Terraform directory not found: {terraform_dir}")
             return
         
         # Count files and modules
         tf_files = list(terraform_dir.glob("**/*.tf"))
         modules = list(terraform_dir.glob("modules/*/"))
         
-        print(f"📁 Terraform directory: {terraform_dir}")
-        print(f"📄 Terraform files: {len(tf_files)}")
-        print(f"📦 Modules: {len(modules)}")
+        print(f"Directory Terraform directory: {terraform_dir}")
+        print(f"Terraform files: {len(tf_files)}")
+        print(f" Modules: {len(modules)}")
         
         if args.detailed:
-            print("\n📦 Module details:")
+            print("\n Module details:")
             for module_dir in modules:
                 module_files = list(module_dir.glob("*.tf"))
                 print(f"   {module_dir.name}: {len(module_files)} files")
@@ -517,16 +514,16 @@ Examples:
         # Check for state file
         state_files = list(terraform_dir.glob("*.tfstate"))
         if state_files:
-            print(f"📊 State files: {len(state_files)}")
+            print(f" State files: {len(state_files)}")
         else:
-            print("📊 No state files found (not initialized)")
+            print(" No state files found (not initialized)")
         
         # Check for import script
         import_script = terraform_dir / "import_resources.sh"
         if import_script.exists():
-            print("📥 Import script: ✅ Available")
+            print("Importing Import script: Success Available")
         else:
-            print("📥 Import script: ❌ Not found")
+            print("Importing Import script: Error Not found")
     
     def _run_discovery(self, regions: List[str], args, config: Dict[str, Any]) -> Dict[str, Any]:
         """Run the discovery process"""
@@ -564,68 +561,82 @@ Examples:
         converted_resources = {}
         
         for resource_id, resource_info in discovery_result.items():
-            # Check if this is a StackInfo object (CloudFormation stack)
-            if hasattr(resource_info, 'stack_id'):
-                # This is a StackInfo object - convert its template
-                if resource_info.template_body:
-                    try:
-                        import json
-                        template = json.loads(resource_info.template_body)
-                        converted = converter.convert_template(template, resource_info.stack_name)
-                        if converted:
-                            converted_resources[resource_id] = {
-                                'type': 'cloudformation_stack',
-                                'stack_name': resource_info.stack_name,
-                                'conversion_result': converted,
-                                'source': 'cloudformation'
-                            }
-                    except Exception as e:
-                        print(f"⚠️  Warning: Failed to convert stack {resource_info.stack_name}: {e}")
-            # Check if this is a ResourceInfo object (independent resource)
-            elif hasattr(resource_info, 'resource_id'):
-                # This is a ResourceInfo object - convert it to Terraform format
-                converted_resources[resource_id] = {
-                    'type': 'independent_resource',
-                    'resource_id': resource_info.resource_id,
-                    'resource_type': resource_info.resource_type,
-                    'source': 'independent'
-                }
-            else:
-                # Fallback for dictionary format
-                if isinstance(resource_info, dict) and resource_info.get('source') == 'cloudformation':
-                    converted = converter.convert_resource(resource_info)
-                    if converted:
-                        converted_resources[resource_id] = converted
+            try:
+                # Check if this is a StackInfo object (CloudFormation stack)
+                if hasattr(resource_info, 'stack_id') and hasattr(resource_info, 'stack_name'):
+                    # This is a StackInfo object - convert its template
+                    if hasattr(resource_info, 'template_body') and resource_info.template_body:
+                        try:
+                            import json
+                            template = json.loads(resource_info.template_body)
+                            converted = converter.convert_template(template, resource_info.stack_name)
+                            if converted:
+                                converted_resources[resource_id] = {
+                                    'type': 'cloudformation_stack',
+                                    'stack_name': resource_info.stack_name,
+                                    'conversion_result': converted,
+                                    'source': 'cloudformation'
+                                }
+                        except Exception as e:
+                            print(f"Warning  Warning: Failed to convert stack {resource_info.stack_name}: {e}")
+                    else:
+                        # Stack without template body - just record it
+                        converted_resources[resource_id] = {
+                            'type': 'cloudformation_stack',
+                            'stack_name': resource_info.stack_name,
+                            'source': 'cloudformation',
+                            'note': 'Template body not available'
+                        }
+                # Check if this is a ResourceInfo object (independent resource)
+                elif hasattr(resource_info, 'resource_id') and hasattr(resource_info, 'resource_type'):
+                    # This is a ResourceInfo object - convert it to Terraform format
+                    converted_resources[resource_id] = {
+                        'type': 'independent_resource',
+                        'resource_id': resource_info.resource_id,
+                        'resource_type': resource_info.resource_type,
+                        'source': 'independent'
+                    }
                 else:
-                    # Independent resources are already in Terraform format
-                    converted_resources[resource_id] = resource_info
+                    # Fallback for dictionary format or unknown objects
+                    if isinstance(resource_info, dict) and resource_info.get('source') == 'cloudformation':
+                        converted = converter.convert_resource(resource_info)
+                        if converted:
+                            converted_resources[resource_id] = converted
+                    else:
+                        # Independent resources or unknown format - just record them
+                        converted_resources[resource_id] = {
+                            'type': 'unknown_resource',
+                            'data': str(resource_info),
+                            'source': 'unknown'
+                        }
+            except Exception as e:
+                print(f"Warning: Failed to process resource {resource_id}: {str(e)}")
         
-        # Generate modules
-        module_generator = EnhancedModuleGenerator(
-            organization_strategy=getattr(args, 'strategy', 'hybrid'),
-            module_prefix=getattr(args, 'module_prefix', ''),
-            preserve_resource_names=getattr(args, 'preserve_names', True)
-        )
+        # Step 2: Convert to Terraform modules
+        print("Converting Step 2: Converting to Terraform modules...")
         
-        result = module_generator.generate_modules(
-            converted_resources=converted_resources,
-            discovery_resources={},
+        from .production_modules import ProductionModuleGenerator
+        
+        module_generator = ProductionModuleGenerator()
+        
+        conversion_result = module_generator.generate_modules(
+            discovery_result=discovery_result,
             output_dir=args.output
         )
         
-        return result
+        return conversion_result
     
     def _run_import_generation(self, terraform_dir: str, discovery_result: Dict[str, Any], args) -> str:
         """Run the import generation process"""
         import_manager = ImportManager(
             terraform_dir=terraform_dir,
-            parallel_imports=getattr(args, 'parallel', True),
+            parallel=getattr(args, 'parallel', True),
             create_backup=getattr(args, 'backup', True)
         )
         
         script_path = import_manager.generate_import_script(
             discovery_result,
-            script_name=getattr(args, 'output_script', 'import_resources.sh')
+            output_file=getattr(args, 'output_script', 'import_resources.sh')
         )
         
         return script_path
@@ -649,14 +660,14 @@ Examples:
 
 This guide helps you get started with your newly converted Terraform configuration.
 
-## 🎉 Conversion Summary
+## Complete Conversion Summary
 
 - **Modules Generated**: {len(conversion_result.modules)}
 - **Total Files**: {conversion_result.total_files}
 - **Variables**: {conversion_result.total_variables}
 - **Outputs**: {conversion_result.total_outputs}
 
-## 🚀 Quick Start
+## Starting Quick Start
 
 ### 1. Initialize Terraform
 
@@ -701,33 +712,33 @@ If you need to make any changes:
 terraform apply
 ```
 
-## 📁 Directory Structure
+## Directory Directory Structure
 
 ```
 {output_dir}/
-├── main.tf                    # Root module
-├── variables.tf               # Root variables
-├── outputs.tf                 # Root outputs
-├── versions.tf                # Provider versions
-├── terraform.tfvars.example  # Example variables
-├── import_resources.sh        # Import script
-├── .gitignore                # Git ignore file
-└── modules/                   # Generated modules
+--- main.tf                    # Root module
+--- variables.tf               # Root variables
+--- outputs.tf                 # Root outputs
+--- versions.tf                # Provider versions
+--- terraform.tfvars.example  # Example variables
+--- import_resources.sh        # Import script
+--- .gitignore                # Git ignore file
+--- modules/                   # Generated modules
 '''
 
         for module_name in conversion_result.modules.keys():
-            guide_content += f'''    ├── {module_name}/
-    │   ├── main.tf
-    │   ├── variables.tf
-    │   ├── outputs.tf
-    │   ├── versions.tf
-    │   └── README.md
+            guide_content += f'''    --- {module_name}/
+    -   --- main.tf
+    -   --- variables.tf
+    -   --- outputs.tf
+    -   --- versions.tf
+    -   --- README.md
 '''
 
         guide_content += '''
 ```
 
-## 🔧 Key Features
+##  Key Features
 
 - **No Hardcoded Values**: All configuration is parameterized through variables
 - **Preserve Resource Names**: Original AWS resource names are maintained
@@ -735,7 +746,7 @@ terraform apply
 - **Comprehensive Documentation**: Each module includes detailed README
 - **Flexible Organization**: Modules organized for maintainability
 
-## 📚 Next Steps
+## Next Steps
 
 1. **Review Module Documentation**: Check each module's README.md
 2. **Customize Variables**: Adjust terraform.tfvars for your environment
@@ -743,21 +754,21 @@ terraform apply
 4. **Add Monitoring**: Set up Terraform state monitoring
 5. **Team Training**: Train your team on the new Terraform workflow
 
-## 🆘 Need Help?
+## - Need Help-
 
 - Check the troubleshooting guide in docs/TROUBLESHOOTING.md
 - Review module-specific README files
 - Validate configuration with `terraform validate`
 - Use `terraform plan` to preview changes
 
-## 🔒 Security Notes
+## - Security Notes
 
 - Never commit terraform.tfvars to version control
 - Use AWS IAM roles instead of access keys when possible
 - Enable state file encryption
 - Regularly review and rotate credentials
 
-Happy Terraforming! 🌍
+Happy Terraforming! -
 '''
         
         guide_path = Path(output_dir) / "GETTING_STARTED.md"
