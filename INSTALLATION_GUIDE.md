@@ -26,25 +26,51 @@ python get-pip.py
 
 ```bash
 # Extract the zip file
-unzip aws-cf-terraform-migrator-v1.0.0.zip
+unzip aws-cf-terraform-migrator-v1.0.0-final.zip
 cd aws-cf-terraform-migrator
 
 # Install dependencies
 pip install -r requirements.txt
-
-# Install the tool
-pip install -e .
 ```
 
-### Step 3: Verify Installation
+### Step 3: Choose Your Installation Method
+
+#### Option A: Direct Python Execution (Recommended - Works on all platforms)
 
 ```bash
-# Check if the tool is installed correctly
-aws-cf-tf-migrate --version
-# or
-cfmigrate --version
+# Test the tool
+python run_cfmigrate.py --version
 
-# Should output: AWS CloudFormation to Terraform Migrator 1.0.0
+# Use the tool
+python run_cfmigrate.py convert-all --regions us-east-1 --output ./terraform
+```
+
+#### Option B: Platform-Specific Scripts
+
+**Linux/Mac:**
+```bash
+# Make executable and run
+chmod +x cfmigrate.sh
+./cfmigrate.sh --version
+./cfmigrate.sh convert-all --regions us-east-1 --output ./terraform
+```
+
+**Windows:**
+```cmd
+REM Use the batch file
+cfmigrate.bat --version
+cfmigrate.bat convert-all --regions us-east-1 --output ./terraform
+```
+
+#### Option C: Traditional pip install (if PATH is configured)
+
+```bash
+# Install the package
+pip install -e .
+
+# Use CLI commands (if scripts are in PATH)
+aws-cf-tf-migrate --version
+cfmigrate --version
 ```
 
 ### Step 4: Configure AWS Credentials
@@ -68,7 +94,7 @@ aws sts get-caller-identity
 
 ```bash
 # Complete migration in one command
-cfmigrate convert-all \
+python run_cfmigrate.py convert-all \
   --regions us-east-1,us-west-2 \
   --output ./my-terraform-project
 
@@ -83,19 +109,19 @@ cfmigrate convert-all \
 
 ```bash
 # Step 1: Discover resources
-cfmigrate discover \
+python run_cfmigrate.py discover \
   --regions us-east-1,us-west-2 \
   --output discovery.json \
   --include-independent
 
 # Step 2: Convert to Terraform
-cfmigrate convert \
+python run_cfmigrate.py convert \
   --input discovery.json \
   --output ./my-terraform-project \
   --strategy hybrid
 
 # Step 3: Generate import scripts
-cfmigrate generate-imports \
+python run_cfmigrate.py generate-imports \
   --terraform-dir ./my-terraform-project \
   --discovery-file discovery.json
 ```
