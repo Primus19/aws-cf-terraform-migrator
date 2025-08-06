@@ -564,13 +564,41 @@ Examples:
         converted_resources = {}
         
         for resource_id, resource_info in discovery_result.items():
-            if resource_info.get('source') == 'cloudformation':
-                converted = converter.convert_resource(resource_info)
-                if converted:
-                    converted_resources[resource_id] = converted
+            # Check if this is a StackInfo object (CloudFormation stack)
+            if hasattr(resource_info, 'stack_id'):
+                # This is a StackInfo object - convert its template
+                if resource_info.template_body:
+                    try:
+                        import json
+                        template = json.loads(resource_info.template_body)
+                        converted = converter.convert_template(template, resource_info.stack_name)
+                        if converted:
+                            converted_resources[resource_id] = {
+                                'type': 'cloudformation_stack',
+                                'stack_name': resource_info.stack_name,
+                                'conversion_result': converted,
+                                'source': 'cloudformation'
+                            }
+                    except Exception as e:
+                        print(f"⚠️  Warning: Failed to convert stack {resource_info.stack_name}: {e}")
+            # Check if this is a ResourceInfo object (independent resource)
+            elif hasattr(resource_info, 'resource_id'):
+                # This is a ResourceInfo object - convert it to Terraform format
+                converted_resources[resource_id] = {
+                    'type': 'independent_resource',
+                    'resource_id': resource_info.resource_id,
+                    'resource_type': resource_info.resource_type,
+                    'source': 'independent'
+                }
             else:
-                # Independent resources are already in Terraform format
-                converted_resources[resource_id] = resource_info
+                # Fallback for dictionary format
+                if isinstance(resource_info, dict) and resource_info.get('source') == 'cloudformation':
+                    converted = converter.convert_resource(resource_info)
+                    if converted:
+                        converted_resources[resource_id] = converted
+                else:
+                    # Independent resources are already in Terraform format
+                    converted_resources[resource_id] = resource_info
         
         # Generate modules
         module_generator = EnhancedModuleGenerator(
