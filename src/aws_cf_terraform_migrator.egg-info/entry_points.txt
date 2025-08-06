@@ -1,0 +1,3 @@
+[console_scripts]
+aws-cf-tf-migrate = aws_cf_terraform_migrator.enhanced_cli:main
+cfmigrate = aws_cf_terraform_migrator.enhanced_cli:main
