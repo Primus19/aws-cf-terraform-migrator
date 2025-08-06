@@ -537,18 +537,21 @@ Examples:
             
             # Use the unified discovery engine
             discovery_engine = DiscoveryEngine(
-                region=region,
+                regions=[region],  # Pass as list, not single region
                 profile=getattr(args, 'profile', None),
                 max_workers=getattr(args, 'max_workers', 10)
             )
             
             # Discover all resources (CloudFormation and independent)
-            region_resources = discovery_engine.discover_all_resources(
-                stack_name_filter=getattr(args, 'stack_filter', None),
-                include_independent=getattr(args, 'include_independent', True),
-                services=None if not hasattr(args, 'services') or not args.services 
-                        else [s.strip() for s in args.services.split(',')]
+            stacks, resources = discovery_engine.discover_all(
+                include_deleted=False,
+                stack_name_filter=getattr(args, 'stack_filter', None)
             )
+            
+            # Combine stacks and resources into a single dictionary
+            region_resources = {}
+            region_resources.update(stacks)
+            region_resources.update(resources)
             
             all_resources.update(region_resources)
         
